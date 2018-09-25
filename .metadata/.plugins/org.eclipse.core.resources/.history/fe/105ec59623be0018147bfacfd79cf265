@@ -1,0 +1,14 @@
+package com.jiayang.prolet.test;
+
+import org.junit.Test;
+
+import com.jiayang.portlet.commons.Config;
+import com.util.config.MergeConfig;
+
+public class ConfigTest {
+	@Test
+	public void ConfigInit() {
+		new MergeConfig("extend.yaml");
+	}
+
+}

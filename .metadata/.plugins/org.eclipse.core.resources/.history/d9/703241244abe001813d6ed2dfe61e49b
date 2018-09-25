@@ -1,0 +1,104 @@
+package com.jiayang.portlet.extend;
+
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.portlet.PortletException;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.jiayang.portlet.commons.ModelAndView;
+import com.jiayang.portlet.freemarker.FreemarkerConfig;
+import com.liferay.util.bridges.mvc.MVCPortlet;
+
+import freemarker.core.ParseException;
+import freemarker.template.MalformedTemplateNameException;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateNotFoundException;
+
+public class MVCFreeMarkerPortlet extends MVCPortlet {
+    private static Logger mvcFreeMarkerPortletLogger =LoggerFactory.getLogger(MVCFreeMarkerPortlet.class);
+	@Override
+	public void doView(RenderRequest renderRequest, RenderResponse renderResponse) throws IOException, PortletException{
+		// TODO Auto-generated method stub
+		ModelAndView modelAndView=showView(renderRequest, renderResponse);
+		if(modelAndView==null) {
+			mvcFreeMarkerPortletLogger.debug("对不起编程必须重写showView方法并且不能为null");
+			throw new RuntimeException("对不起编程必须重写showView方法并且不能为null");
+		}
+		Template template;
+		if(modelAndView.getModel().isEmpty())
+		{
+			
+			try {
+				template = FreemarkerConfig.configuration.getTemplate(modelAndView.getView());
+				template.process(renderRequest,renderResponse.getWriter());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				mvcFreeMarkerPortletLogger.error("IO错误！！！！:{}",e);
+				e.printStackTrace();
+			}
+			catch (TemplateException e) {
+				// TODO Auto-generated catch block
+				mvcFreeMarkerPortletLogger.error("模板解析错误！！！！:{}",e);
+				e.printStackTrace();
+			}
+		}
+		else {
+		
+		try {
+			template=FreemarkerConfig.configuration.getTemplate(modelAndView.getView());
+			template.process(modelAndView.getModel(),renderResponse.getWriter());
+		} catch (TemplateException e) {
+			// TODO Auto-generated catch block
+			mvcFreeMarkerPortletLogger.error("模板解析错误！！！！：{}",e);
+			e.printStackTrace();
+		} catch (TemplateNotFoundException e) {
+			// TODO Auto-generated catch block
+			mvcFreeMarkerPortletLogger.error("未找到模板模板解析错误！！！！：{}",e);
+			e.printStackTrace();
+		} catch (MalformedTemplateNameException e) {
+			// TODO Auto-generated catch block
+			mvcFreeMarkerPortletLogger.error("模板解析错误！！！！：{}",e);
+			e.printStackTrace();
+		} catch (ParseException e) {
+			mvcFreeMarkerPortletLogger.error("模板解析错误！！！！：{}",e);
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			mvcFreeMarkerPortletLogger.error("IO错误！！！！：{}",e);
+			e.printStackTrace();
+		}
+		
+		}
+		
+		
+	}
+
+	protected ModelAndView showView(RenderRequest renderRequest, RenderResponse renderResponse) {
+		
+		return null;
+	}
+	private Map<String, Object> renderRequestToMap(RenderRequest request)
+	{
+		Map<String, Object> result=new HashMap<>();
+		Enumeration<String> enumeration=request.getAttributeNames();
+		while(enumeration.hasMoreElements()) {
+			String attrName=enumeration.nextElement();
+			result.put(attrName,request.getAttribute(attrName));
+		    
+		}
+		return result;
+		}
+	
+	
+
+}

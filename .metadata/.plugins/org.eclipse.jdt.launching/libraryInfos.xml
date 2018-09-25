@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<libraryInfos>
+<libraryInfo home="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu" version="1.8.0_181">
+<bootpath>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/lib/resources.jar"/>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/lib/rt.jar"/>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/lib/sunrsasign.jar"/>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/lib/jsse.jar"/>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/lib/jce.jar"/>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/lib/charsets.jar"/>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/lib/jfr.jar"/>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/classes"/>
+</bootpath>
+<extensionDirs>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/lib/ext"/>
+<entry path="/usr/java/packages/lib/ext"/>
+</extensionDirs>
+<endorsedDirs>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/lib/endorsed"/>
+</endorsedDirs>
+</libraryInfo>
+<libraryInfo home="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre" version="1.8.0_181">
+<bootpath>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/lib/resources.jar"/>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/lib/rt.jar"/>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/lib/sunrsasign.jar"/>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/lib/jsse.jar"/>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/lib/jce.jar"/>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/lib/charsets.jar"/>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/lib/jfr.jar"/>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/classes"/>
+</bootpath>
+<extensionDirs>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/lib/ext"/>
+<entry path="/usr/java/packages/lib/ext"/>
+</extensionDirs>
+<endorsedDirs>
+<entry path="/home/jiayang/.sdkman/candidates/java/8.0.181-zulu/jre/lib/endorsed"/>
+</endorsedDirs>
+</libraryInfo>
+</libraryInfos>

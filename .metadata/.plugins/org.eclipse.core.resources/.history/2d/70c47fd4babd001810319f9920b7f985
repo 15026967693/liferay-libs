@@ -1,0 +1,15 @@
+package com.jiayang.portlet.commons;
+
+import java.util.Map;
+
+import org.yaml.snakeyaml.Yaml;
+
+public class Config {
+	public static Map<String,Object> config;
+	static {
+		Yaml yaml=new Yaml();
+		config=yaml.load(Config.class.getClassLoader().getResourceAsStream("/extend.yaml"));
+
+	}
+
+}

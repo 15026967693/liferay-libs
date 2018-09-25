@@ -1,0 +1,27 @@
+package com.jiayang.portlet.extend;
+
+import java.io.IOException;
+
+import javax.portlet.PortletException;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+
+import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
+
+public class MVCFreeMarkerPortlet<T> extends MVCPortlet{
+
+	@Override
+	public void doView(RenderRequest renderRequest, RenderResponse renderResponse)
+			throws IOException, PortletException {
+		// TODO Auto-generated method stub
+		
+	}
+	public T View() {
+	    T t=null;
+	    return t;
+	}
+	
+	
+	
+
+}

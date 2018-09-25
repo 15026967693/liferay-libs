@@ -1,0 +1,35 @@
+package com.jiayang.portlet.commons;
+
+import java.util.Map;
+
+import javax.portlet.RenderRequest;
+import javax.servlet.http.HttpServletRequest;
+
+public class ModelAndView implements IModelAndView<Map<String, Object>> {
+	
+
+	@Override
+	public String getView() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> getModel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setView(String view) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setModel(Map<String, Object> model) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

@@ -1,0 +1,13 @@
+package com.jiayang.prolet.test;
+
+import org.junit.Test;
+
+import com.jiayang.portlet.commons.Config;
+
+public class ConfigTest {
+	@Test
+	public void ConfigInit() {
+		new Config();
+	}
+
+}

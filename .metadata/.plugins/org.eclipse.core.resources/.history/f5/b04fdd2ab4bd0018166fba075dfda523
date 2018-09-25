@@ -1,0 +1,12 @@
+package com.jiayang.portlet.freemark;
+
+import freemarker.template.Configuration;
+
+public class FreemarkConfig {
+   public static Configuration configuration;
+    static {
+    	configuration=new Configuration(Configuration.VERSION_2_3_28);
+    	configuration.setDefaultEncoding("UTF-8");
+    	
+    }
+}

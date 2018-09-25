@@ -1,0 +1,5 @@
+package com.util.config;
+
+public class MergedConfig {
+
+}

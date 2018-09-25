@@ -1,0 +1,5 @@
+package com.jiayang.portlet.freemark;
+
+public class FreemarkConfig {
+
+}

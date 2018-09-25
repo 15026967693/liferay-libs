@@ -1,0 +1,17 @@
+package com.jiayang.portlet.freemark;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import freemarker.template.Configuration;
+
+public class FreemarkConfig {
+	public static Logger logger=LoggerFactory.getLogger(FreemarkConfig.class);
+   public static Configuration configuration;
+    static {
+    	configuration=new Configuration(Configuration.VERSION_2_3_28);
+    	configuration.setDefaultEncoding("UTF-8");
+    	logger.info("{}初始化完成",configuration);
+    	
+    }
+}

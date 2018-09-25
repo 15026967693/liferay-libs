@@ -1,0 +1,36 @@
+package com.jiayang.portlet.commons;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.portlet.RenderRequest;
+import javax.servlet.http.HttpServletRequest;
+
+public class ModelAndView implements IModelAndView<Map<String, Object>> {
+	private String view;
+	private Map<String, Object> model=new HashMap<>();
+	@Override
+	public String getView() {
+		// TODO Auto-generated method stub
+		return view;
+	}
+
+	@Override
+	public Map<String, Object> getModel() {
+		
+		return model;
+	}
+
+	@Override
+	public void setView(String view) {
+		this.view=view;
+		
+	}
+
+	@Override
+	public void setModel(Map<String, Object> model) {
+		// TODO Auto-generated method stub
+		this.model=model;
+	}
+
+}

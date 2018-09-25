@@ -1,0 +1,18 @@
+package com.jiayang.prolet.test;
+
+import org.junit.Test;
+
+import com.jiayang.portlet.commons.Config;
+
+public class ConfigTest {
+	@Test
+	public void ConfigInit() {
+		/*try {
+			//Class.forName("com.jiayang.portlet.commons.Config");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+	}
+
+}
