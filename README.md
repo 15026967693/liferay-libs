@@ -12,7 +12,7 @@ template:
 ```
 ## 另外不再复写onView方法改为复写showView方法，至于为什么，有兴趣的可以看源码![](https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=898286550,2901399876&fm=26&gp=0.jpg)，反正不复写他就会直接抛出一个RuntimeException让你咻的一下爆红(就是我干的)![](https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=898286550,2901399876&fm=26&gp=0.jpg)。
 
-## onView的方法返回的是一个自定义的ModelAndView，定义如下，有个人需求的可以自己改，将来应该会换成接口，现在先这样：
+## showView的方法返回的是一个自定义的ModelAndView，定义如下，有个人需求的可以自己改，将来应该会换成接口，现在先这样：
 ``` java
 public class ModelAndView implements IModelAndView<Map<String, Object>> {
 	private static Logger mvLogger=LoggerFactory.getLogger(ModelAndView.class);
