@@ -1,0 +1,15 @@
+package com.jiayang.portlet.commons;
+
+import javax.portlet.RenderRequest;
+
+public class AjaxUtil {
+	private String serverPath;
+	public  AjaxUtil(RenderRequest request)
+	{
+		serverPath=request.getScheme()+":"+request.getServerName()+":"
+	+request.getServerPort()+"/";
+	}
+	public String getAjaxPath() {
+		
+	}
+}

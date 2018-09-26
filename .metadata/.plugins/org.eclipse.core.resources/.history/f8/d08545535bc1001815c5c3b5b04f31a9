@@ -2,5 +2,5 @@ template:
         path: /
         encoding: UTF-8
         suffix: .ftl
-friendlyURL: web/guest/home
+friendlyUrl: web/guest/home
         

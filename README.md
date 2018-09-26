@@ -10,7 +10,7 @@ template:
 #freemarker文件的后缀名
         suffix: .ftl
 ```
-## 另外不再复写onView方法改为复写showView方法，至于为什么，有兴趣的可以看源码![](https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=898286550,2901399876&fm=26&gp=0.jpg)，反正不复写他就会直接抛出一个RuntimeException让你咻的一下爆红![](https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=898286550,2901399876&fm=26&gp=0.jpg)。
+## 另外不再复写onView方法改为复写showView方法，至于为什么，有兴趣的可以看源码![](https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=898286550,2901399876&fm=26&gp=0.jpg)，反正不复写他就会直接抛出一个RuntimeException让你咻的一下爆红(就是我干的)![](https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=898286550,2901399876&fm=26&gp=0.jpg)。
 
 ## onView的方法返回的是一个自定义的ModelAndView，定义如下，有个人需求的可以自己改，将来应该会换成接口，现在先这样：
 ``` java
@@ -52,3 +52,16 @@ public class ModelAndView implements IModelAndView<Map<String, Object>> {
 ```
 
 ## 重要：不再使用默认的MVCPortlet而是MVCFreeMarkerPortlet，新加的拓展全是jiayang的包名下的。
+
+
+# ajax URL生成的研究
+liferay根据ajax地址自动调用serveResource方法，此研究旨在认为构造ajax地址，方便freemarker调用，目前
+测试的ajaxurl地址为http://localhost:10000/web/guest/home?p_p_id=main_WAR_LiferayTestportlet&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_cacheability=cacheLevelPage&p_p_col_id=column-3&p_p_col_count=1&p_p_resource_id=test1
+
+其中http://localhost:10000/web/guest/home应该是固定部分
+***p_p_id***参数经过验证可以用((LiferayPortletConfig)request.getAttribute(
+JavaConstants.JAVAX_PORTLET_CONFIG)).getPortletId()方法获取到，其中request为一个PortletRequest或其子类对象有待验证但基本可以确定是他了
+
+* ajax已经提供工具类ajaxUtil,可直接在ftl模板中${ajaxUtil.getAjaxPath("resourceId")}，剪掉了两个p_p_col_id、p_p_col_count、p_p_state这三个参数不知道干嘛的，有待测试。
+
+*  跳转URL还未提供工具正在研究中

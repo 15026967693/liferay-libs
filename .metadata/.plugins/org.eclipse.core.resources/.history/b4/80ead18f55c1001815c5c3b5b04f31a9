@@ -1,0 +1,5 @@
+package com.jiayang.portlet.commons;
+
+public class AjaxUtil {
+
+}

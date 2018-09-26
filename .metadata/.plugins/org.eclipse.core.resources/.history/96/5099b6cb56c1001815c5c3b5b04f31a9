@@ -13,12 +13,8 @@ import javax.portlet.RenderResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jiayang.portlet.commons.AjaxUtil;
 import com.jiayang.portlet.commons.ModelAndView;
 import com.jiayang.portlet.freemarker.FreemarkerConfig;
-import com.liferay.portal.kernel.model.Group;
-import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
-import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
 import freemarker.core.ParseException;
@@ -39,11 +35,6 @@ public class MVCFreeMarkerPortlet extends MVCPortlet {
 		}
 		
 		renderRequest.setAttribute("projectPath", renderRequest.getScheme()+"://"+renderRequest.getServerName()+":"+renderRequest.getServerPort()+"/"+getPortletContext().getPortletContextName());
-		
-		renderRequest.setAttribute("ajaxUtil", new AjaxUtil(renderRequest));
-		
-	    
-		
 		mergeRenderRequestToModel(renderRequest,modelAndView);
 		Template template;
 		
