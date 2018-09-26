@@ -62,6 +62,6 @@ liferay根据ajax地址自动调用serveResource方法，此研究旨在认为�
 ***p_p_id***参数经过验证可以用((LiferayPortletConfig)request.getAttribute(
 JavaConstants.JAVAX_PORTLET_CONFIG)).getPortletId()方法获取到，其中request为一个PortletRequest或其子类对象有待验证但基本可以确定是他了
 
-* ajax已经提供工具类ajaxUtil,可直接在ftl模板中${ajaxUtil.getAjaxPath("resourceId")}，剪掉了两个p_p_col_id、p_p_col_count、p_p_state这三个参数不知道干嘛的，有待测试。
+* ajax已经提供工具类ajaxUtil,可直接在ftl模板中${ajaxUtil.getAjaxPath("resourceId")}，剪掉了p_p_col_id、p_p_col_count、p_p_state这三个参数不知道干嘛的，有待测试。
 
 *  跳转URL还未提供工具正在研究中
