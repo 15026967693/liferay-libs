@@ -9,6 +9,8 @@ template:
         path: /template
 #freemarker文件的后缀名
         suffix: .ftl
+#友好连接名有待修改
+friendlyURL: web/guest/home
 ```
 ## 另外不再复写onView方法改为复写showView方法，至于为什么，有兴趣的可以看源码![](https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=898286550,2901399876&fm=26&gp=0.jpg)，反正不复写他就会直接抛出一个RuntimeException让你咻的一下爆红(就是我干的)![](https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=898286550,2901399876&fm=26&gp=0.jpg)。
 
@@ -64,4 +66,14 @@ JavaConstants.JAVAX_PORTLET_CONFIG)).getPortletId()方法获取到，其中reque
 
 * ajax已经提供工具类ajaxUtil,可直接在ftl模板中${ajaxUtil.getAjaxPath("resourceId")}，剪掉了p_p_col_id、p_p_col_count、p_p_state这三个参数不知道干嘛的，有待测试。
 
-*  跳转URL还未提供工具正在研究中
+
+加入了视图控制器，requestMapping是自己写的并不是spring的请注意！！
+路径请使用pathUtil在模板中生成
+``` java
+  @RequestMapping(path="/test2",method=HttpMethod.GET)
+	public ModelAndView  test2(RenderRequest renderRequest,RenderResponse response){
+		renderRequest.setAttribute("hello", "this is hello message");
+		return new ModelAndView("/test");
+	}
+```
+
