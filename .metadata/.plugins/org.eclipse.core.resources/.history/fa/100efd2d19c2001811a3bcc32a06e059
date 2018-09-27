@@ -1,0 +1,9 @@
+package com.jiayang.portlet.commons;
+
+public interface IModelAndView<T> {
+  String getView();
+  T getModel();
+  T getOriginalModel();
+  void setView(String view);
+  void setModel(T model);
+}

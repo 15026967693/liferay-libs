@@ -1,24 +1,34 @@
 package com.jiayang.portlet.extend;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
+import com.liferay.portal.util.PortalUtil;
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jiayang.portlet.commons.AjaxUtil;
+import com.jiayang.portlet.annotation.RequestMapping;
+import com.jiayang.portlet.commons.IModelAndView;
 import com.jiayang.portlet.commons.ModelAndView;
+import com.jiayang.portlet.commons.PathUtil;
+import com.jiayang.portlet.enumeration.HttpMethod;
+import com.jiayang.portlet.exception.ViewNullExcetion;
 import com.jiayang.portlet.freemarker.FreemarkerConfig;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
+import com.liferay.portal.kernel.service.persistence.PortletUtil;
 import com.liferay.portal.kernel.util.JavaConstants;
+
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
 import freemarker.core.ParseException;
@@ -27,8 +37,11 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateNotFoundException;
 
+@SuppressWarnings("deprecation")
 public class MVCFreeMarkerPortlet extends MVCPortlet {
     private static Logger mvcFreeMarkerPortletLogger =LoggerFactory.getLogger(MVCFreeMarkerPortlet.class);
+    private String basePath="/";
+    private Map<String,Map<HttpMethod,Method>> URLMapping=new HashMap<>(); 
 	@Override
 	public void doView(RenderRequest renderRequest, RenderResponse renderResponse) throws IOException, PortletException{
 		// TODO Auto-generated method stub
@@ -40,7 +53,7 @@ public class MVCFreeMarkerPortlet extends MVCPortlet {
 		
 		renderRequest.setAttribute("projectPath", renderRequest.getScheme()+"://"+renderRequest.getServerName()+":"+renderRequest.getServerPort()+"/"+getPortletContext().getPortletContextName());
 		
-		renderRequest.setAttribute("ajaxUtil", new AjaxUtil(renderRequest));
+		renderRequest.setAttribute("pathUtil", new PathUtil(renderRequest));
 		
 	    
 		
@@ -56,11 +69,175 @@ public class MVCFreeMarkerPortlet extends MVCPortlet {
 			mvcFreeMarkerPortletLogger.error("模板解析错误！！！！：{}",e);
 			e.printStackTrace();
 		} 
+		catch (ViewNullExcetion e) {
+			e.printStackTrace();
+			mvcFreeMarkerPortletLogger.debug("在showView中返回了一个值为null的视图，如果这不是您的预期行为，请检查代码");
+			// TODO: handle exception
+		}
 		
 		
 		
 		
 	}
+   private String getRequestMappingPath(RequestMapping requestMapping)
+   { 
+	   if(requestMapping!=null)
+		{
+		   String path=null;
+		   if(requestMapping.path().equals(""))
+		      path=requestMapping.value();
+		   else
+		      path=requestMapping.path();
+		   
+		   return path;
+		}
+	   else
+		   return "/";
+	   
+   }
+	private void viewToResponse(RenderRequest renderRequest,RenderResponse renderResponse,ModelAndView modelAndView,Method invokeMethod)
+	throws IOException,PortletException
+	{
+        renderRequest.setAttribute("projectPath", renderRequest.getScheme()+"://"+renderRequest.getServerName()+":"+renderRequest.getServerPort()+"/"+getPortletContext().getPortletContextName());
+		
+		renderRequest.setAttribute("pathUtil", new PathUtil(renderRequest));
+		
+	    
+		
+		mergeRenderRequestToModel(renderRequest,modelAndView);
+		Template template;
+		
+		
+		try {
+			template=FreemarkerConfig.configuration.getTemplate(modelAndView.getView());
+			template.process(modelAndView.getModel(),renderResponse.getWriter());
+		} catch (TemplateException e) {
+			// TODO Auto-generated catch block
+			mvcFreeMarkerPortletLogger.error("模板解析错误！！！！：{}",e);
+			e.printStackTrace();
+		} 
+		catch (ViewNullExcetion e) {
+			mvcFreeMarkerPortletLogger.debug("编程错误：{}",e);
+			mvcFreeMarkerPortletLogger.debug("在解析路径{}的时候您在对应的{}方法中返回了一个值为null的视图，如果这不是您的预期行为，请检查代码",getPath(renderRequest),invokeMethod.getName());
+			doView(renderRequest, renderResponse);
+		}
+		
+	}
+	
+	
+	
+	
+	public  MVCFreeMarkerPortlet() {
+		super();
+		RequestMapping baseMapping=this.getClass().getAnnotation(RequestMapping.class);
+		basePath=getRequestMappingPath(baseMapping);
+		for(Method method:this.getClass().getMethods())
+		{		
+			RequestMapping requestMappingAnnotation=method.getAnnotation(RequestMapping.class);
+			if(requestMappingAnnotation!=null)
+				{
+				     String path=getRequestMappingPath(requestMappingAnnotation);
+					  Map<HttpMethod,Method> methodMap=new HashMap<>();
+					  if(requestMappingAnnotation.method()==HttpMethod.ALL)
+					  {
+						  methodMap.put(HttpMethod.GET, method);
+						  methodMap.put(HttpMethod.POST, method);
+					  }
+				      else
+					  methodMap.put(requestMappingAnnotation.method(), method);
+					  String mapPath=(this.basePath+path).replaceAll("/+", "/").replaceAll("\\+", "/");
+					  this.URLMapping.put(mapPath,methodMap);
+					  
+				  
+				 
+				   
+				   
+				}
+			
+		}
+		// TODO Auto-generated constructor stub
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	@Override
+	protected void doDispatch(RenderRequest renderRequest, RenderResponse renderResponse)
+			throws IOException, PortletException {
+		// TODO Auto-generated method stub
+		String path=getPath(renderRequest);
+		if(path==null) {
+			doView(renderRequest, renderResponse);
+		  
+		}
+		else
+		{
+		   HttpMethod method=HttpMethod.valueOf(PortalUtil.getHttpServletRequest(renderRequest).getMethod());
+		   Method invokeMethod=URLMapping.get(getPath(renderRequest)).get(method);
+		   Class<?>[] parameterTypes=invokeMethod.getParameterTypes();
+		   if(parameterTypes.length==2
+				   &&parameterTypes[0].getName().equals("javax.portlet.RenderRequest")
+				   &&parameterTypes[1].getName().equals("javax.portlet.RenderResponse")
+				   &&IModelAndView.class.isAssignableFrom(invokeMethod.getReturnType()))
+			   {
+			   try {
+			      ModelAndView modelAndView=(ModelAndView)invokeMethod.invoke(this,renderRequest,renderResponse); 
+			      viewToResponse(renderRequest, renderResponse, modelAndView,invokeMethod);
+			      
+			      
+			      
+			   }
+			   catch (IllegalAccessException e) {
+				   e.printStackTrace();
+				// TODO: handle exception
+			}
+			   catch (InvocationTargetException e) {
+				   e.printStackTrace();
+				  
+				   mvcFreeMarkerPortletLogger.error("错误：{}",e);
+				// TODO: handle exception
+			}
+			   }
+		   else
+		   {
+			  throw new RuntimeException("方法签名错误，错误方法为"+invokeMethod.getName());
+		   }
+		   
+		   
+		   
+		   
+           
+		}
+		return;
+	}
+
+
+
+
+	protected String getPath(PortletRequest portletRequest) {
+		String mvcPath = portletRequest.getParameter("mvcPath");
+
+		// Check deprecated parameter
+
+		if (mvcPath == null) {
+			mvcPath = portletRequest.getParameter("jspPage");
+		}
+
+		return mvcPath;
+	}
+
+
+
+
+
+
+
+
+
 
 	protected ModelAndView showView(RenderRequest renderRequest, RenderResponse renderResponse) {
 		
@@ -80,7 +257,6 @@ public class MVCFreeMarkerPortlet extends MVCPortlet {
 		return result;
 	}
 	private void mergeRenderRequestToModel(RenderRequest renderRequest,ModelAndView modelAndView) {
-		Map<String, Object> modelMerged=new HashMap<>();
 		Map<String,Object> requestMap=renderRequestToMap(renderRequest);
 		Map<String,Object> model=modelAndView.getModel();
 		for(String key:requestMap.keySet())

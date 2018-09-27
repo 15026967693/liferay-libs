@@ -1,0 +1,5 @@
+package com.jiayang.portlet.annotation;
+
+public @interface RequestMapping {
+
+}

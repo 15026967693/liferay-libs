@@ -1,0 +1,113 @@
+package com.jiayang.portlet.commons;
+
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.portlet.RenderRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
+import java.net.URLEncoder;
+import com.liferay.portal.kernel.util.JavaConstants;
+
+public class PathUtil {
+	private String serverPath;
+	private String ppid;
+	private String friendlyURL;
+	private static Logger pathUtilLogger=LoggerFactory.getLogger(PathUtil.class);
+	
+	private String genPortletParam(String paramName) {
+		return "_"+ppid+"_"+paramName;
+	}
+	
+	
+	
+	
+	
+	public  PathUtil(RenderRequest request)
+	{
+		serverPath=request.getScheme()+"://"+request.getServerName()+":"
+	+request.getServerPort()+"/";
+		ppid=((LiferayPortletConfig)request.getAttribute(JavaConstants.JAVAX_PORTLET_CONFIG)).getPortletId();
+		
+		String configFriendlyURL=(String) Config.config.get("friendlyURL");
+	    this.friendlyURL=configFriendlyURL.endsWith("/")?configFriendlyURL.substring(0, configFriendlyURL.length()-1):configFriendlyURL;
+	  
+	}
+	public String ajax(String resourceId) {
+		//p_p_id=main_WAR_LiferayTestportlet&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_cacheability=cacheLevelPage&p_p_col_id=column-3&p_p_col_count=1&p_p_resource_id=test1
+		
+		ParamGenerator paramGenerator=new ParamGenerator();
+		paramGenerator.setParam("p_p_id", ppid);
+		paramGenerator.setParam("p_p_lifecycle",2);
+		paramGenerator.setParam("p_p_mode", "view");
+		paramGenerator.setParam("p_p_cacheability", "cacheLevelPage");
+		paramGenerator.setParam("p_p_resource_id", resourceId);
+		return paramGenerator.urlAppendParamEncoded(serverPath+friendlyURL);
+	}
+	
+	//http://localhost:10000/web/guest/home?p_p_id=main_WAR_LiferayTestportlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&p_p_col_id=column-3&p_p_col_count=1&_main_WAR_LiferayTestportlet_mvcPath=%2Fhtml%2Fconfig%2Ftest.jsp&_main_WAR_LiferayTestportlet_redirect=true 
+	public String render(String mvcPath,String redirect) {
+		ParamGenerator paramGenerator=new ParamGenerator();
+		paramGenerator.setParam("p_p_id", ppid);
+		paramGenerator.setParam("p_p_lifecycle",0);
+		paramGenerator.setParam("p_p_mode", "view");
+		paramGenerator.setParam("p_p_cacheability", "cacheLevelPage");
+		paramGenerator.setParam(genPortletParam("mvcPath"), mvcPath);
+		paramGenerator.setParam(genPortletParam("redirect"), redirect);
+		return paramGenerator.urlAppendParamEncoded(serverPath+friendlyURL);
+	}
+	private class ParamGenerator{
+		private Map<String, String> params=new HashMap<>();
+		public void setParam(String name,String value)
+		{
+			params.put(name, value);
+		}
+		public void setParam(String name,Integer value)
+		{
+			params.put(name, value+"");
+		}
+		
+		@Override
+		public String toString() {
+			String result="";
+			for(String key:params.keySet())
+			{
+				result+=key+"="+params.get(key)+"&";
+			}
+			//result.substring(0,result.length()-1);
+			return result;
+		}
+		public String urlAppendParam(String url) {
+			return url+"?"+toString();
+		}
+		public String urlAppendParamEncoded(String url) {
+			
+				try {
+					String result="";
+					for(String key:params.keySet())
+					{
+						result+=URLEncoder.encode(key,"UTF-8")+"="+URLEncoder.encode(params.get(key),"UTF-8")+"&";
+					}
+					//result.substring(0,result.length()-2);
+					
+					
+					return url+"?"+result;
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					pathUtilLogger.error("错误：不存在的编码，请检查编码是否存在");
+					return null;
+				}
+			
+		}
+		
+	}
+	
+	
+	
+	
+	
+}

@@ -1,0 +1,5 @@
+package com.jiayang.portlet.exception;
+
+public class ViewNullExcetion extends Exception {
+
+}
