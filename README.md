@@ -67,7 +67,7 @@ JavaConstants.JAVAX_PORTLET_CONFIG)).getPortletId()方法获取到，其中reque
 * ajax已经提供工具类ajaxUtil,可直接在ftl模板中${ajaxUtil.getAjaxPath("resourceId")}，剪掉了p_p_col_id、p_p_col_count、p_p_state这三个参数不知道干嘛的，有待测试。
 
 
-加入了视图控制器，requestMapping是自己写的并不是spring的请注意！！
+加入了视图控制器，requestMapping是自己写的并不是spring的请注意不要倒导错包！！
 路径请使用pathUtil在模板中生成
 ``` java
   @RequestMapping(path="/test2",method=HttpMethod.GET)
@@ -76,4 +76,26 @@ JavaConstants.JAVAX_PORTLET_CONFIG)).getPortletId()方法获取到，其中reque
 		return new ModelAndView("/test");
 	}
 ```
+重新封装了serveResource方法
+现在支持直接注解方法返回服务器资源，示例如下：
+``` groovy
+@ResourceMapping(resourceId="test")
+	public String json(ResourceRequest renderRequest,ResourceResponse renderResponse)
+	{
+		
+		return "{\"name\":\"jy\"}";
+	}
+	@ResourceMapping(resourceId="file",resourceType=ResourceType.FILE)
+	public FileStruct file(ResourceRequest renderRequest,ResourceResponse renderResponse)
+	{
+		FileStruct fileStruct=new FileStruct();
+		fileStruct.setDownloadName("myfile.txt");
+		fileStruct.setContentType(ContentTypes.APPLICATION_OCTET_STREAM);
+		fileStruct.setFile(new File("/home/jiayang/1.html"));
+		return fileStruct;
+	}
+
+
+```
+注意json可以返回任何非基本类型，底层使用goole 的gson转换成字符串，对于字符串类型虽然也是一个非基本类型，但做了特殊处理，对于String类型不会做json转换！！1
 
