@@ -29,7 +29,7 @@ public class ModelAndView implements IModelAndView<Map<String, Object>> {
 	@Override
 	public String getView() throws ViewNullExcetion{
 		// TODO Auto-generated method stub
-		if(view==null||view.trim().isEmpty())
+		if(view==null||view.trim().replaceAll(" ","").isEmpty())
 			throw new ViewNullExcetion();
 		return view+((Map<String, Object>)Config.config.get("template")).get("suffix");
 	}

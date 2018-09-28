@@ -1,5 +1,6 @@
 package com.jiayang.portlet.extend;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -14,19 +15,33 @@ import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jiayang.portlet.annotation.RequestMapping;
+import com.jiayang.portlet.annotation.ResourceMapping;
 import com.jiayang.portlet.commons.IModelAndView;
 import com.jiayang.portlet.commons.ModelAndView;
 import com.jiayang.portlet.commons.PathUtil;
 import com.jiayang.portlet.enumeration.HttpMethod;
+import com.jiayang.portlet.enumeration.ResourceType;
 import com.jiayang.portlet.exception.ViewNullExcetion;
 import com.jiayang.portlet.freemarker.FreemarkerConfig;
+import com.jiayang.portlet.struts.FileStruct;
+import com.jiayang.portlet.struts.MethodDataStruct;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
 import com.liferay.portal.kernel.service.persistence.PortletUtil;
+import com.liferay.portal.kernel.servlet.ServletResponseUtil;
+import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.JavaConstants;
 
 import com.liferay.util.bridges.mvc.MVCPortlet;
@@ -41,9 +56,11 @@ import freemarker.template.TemplateNotFoundException;
 public class MVCFreeMarkerPortlet extends MVCPortlet {
     private static Logger mvcFreeMarkerPortletLogger =LoggerFactory.getLogger(MVCFreeMarkerPortlet.class);
     private String basePath="/";
+    private static Gson gson=new GsonBuilder().setPrettyPrinting().create(); 
     private Map<String,Map<HttpMethod,Method>> URLMapping=new HashMap<>(); 
+    private Map<String,MethodDataStruct> resourceMapping=new HashMap<>(); 
 	@Override
-	public void doView(RenderRequest renderRequest, RenderResponse renderResponse) throws IOException, PortletException{
+	public final void doView(RenderRequest renderRequest, RenderResponse renderResponse) throws IOException, PortletException{
 		// TODO Auto-generated method stub
 		ModelAndView modelAndView=showView(renderRequest, renderResponse);
 		if(modelAndView==null) {
@@ -71,7 +88,7 @@ public class MVCFreeMarkerPortlet extends MVCPortlet {
 		} 
 		catch (ViewNullExcetion e) {
 			e.printStackTrace();
-			mvcFreeMarkerPortletLogger.debug("在showView中返回了一个值为null的视图，如果这不是您的预期行为，请检查代码");
+			throw new RuntimeException("showView方法返回的视图视图名名不存在或为空");
 			// TODO: handle exception
 		}
 		
@@ -117,7 +134,7 @@ public class MVCFreeMarkerPortlet extends MVCPortlet {
 			e.printStackTrace();
 		} 
 		catch (ViewNullExcetion e) {
-			mvcFreeMarkerPortletLogger.debug("编程错误：{}",e);
+			mvcFreeMarkerPortletLogger.debug("疑似编程错误",e);
 			mvcFreeMarkerPortletLogger.debug("在解析路径{}的时候您在对应的{}方法中返回了一个值为null的视图，如果这不是您的预期行为，请检查代码",getPath(renderRequest),invokeMethod.getName());
 			doView(renderRequest, renderResponse);
 		}
@@ -136,7 +153,18 @@ public class MVCFreeMarkerPortlet extends MVCPortlet {
 			RequestMapping requestMappingAnnotation=method.getAnnotation(RequestMapping.class);
 			if(requestMappingAnnotation!=null)
 				{
-				     String path=getRequestMappingPath(requestMappingAnnotation);
+				 Class<?>[] parameterTypes=method.getParameterTypes();
+				   if(!(parameterTypes.length==2
+						   &&parameterTypes[0].getName().equals("javax.portlet.RenderRequest")
+						   &&parameterTypes[1].getName().equals("javax.portlet.RenderResponse")
+						   &&IModelAndView.class.isAssignableFrom(method.getReturnType())))
+					   {
+				
+						  throw new RuntimeException("方法签名错误，错误方法为"+method.getName()+"目前只支持方法签名为([Ljavax.portlet.RenderRequest;[Ljavax.portlet.RenderResponse;)[Lcom.jiayang.portlet.commons.ModelAndView;的方法");
+					   }
+				
+				
+				      String path=getRequestMappingPath(requestMappingAnnotation);
 					  Map<HttpMethod,Method> methodMap=new HashMap<>();
 					  if(requestMappingAnnotation.method()==HttpMethod.ALL)
 					  {
@@ -153,6 +181,55 @@ public class MVCFreeMarkerPortlet extends MVCPortlet {
 				   
 				   
 				}
+			ResourceMapping resourceMapping=method.getAnnotation(ResourceMapping.class);
+			if(resourceMapping!=null)
+			{
+				Class<?>[] parameterTypes=method.getParameterTypes();
+				ResourceType resourceType=resourceMapping.resourceType();
+				switch(resourceType)
+				{
+				case JSON:
+				if(!(parameterTypes.length==2
+						   &&parameterTypes[0].getName().equals("javax.portlet.ResourceRequest")
+						   &&parameterTypes[1].getName().equals("javax.portlet.ResourceResponse")
+						   &&!method.getReturnType().isPrimitive()))
+					   {
+				
+						  throw new RuntimeException("方法签名错误，错误方法为"+method.getName()+"目前只支持方法签名为([Ljavax.portlet.ResourceRequest;[Ljavax.portlet.ResourceResponse;)[Ljava.lang.Object的方法");
+					   }
+				
+				break;
+				case FILE:
+						if(!(parameterTypes.length==2
+								   &&parameterTypes[0].getName().equals("javax.portlet.ResourceRequest")
+								   &&parameterTypes[1].getName().equals("javax.portlet.ResourceResponse")
+								   &&!FileStruct.class.isAssignableFrom(method.getReturnType())))
+							   {
+						
+								  throw new RuntimeException("方法签名错误，错误方法为"+method.getName()+"目前只支持方法签名为([Ljavax.portlet.ResourceRequest;[Ljavax.portlet.ResourceResponse;)[Lcom.jiayang.portlet.struts.FileStruct的方法");
+							   }
+					
+					break;
+				
+				
+				}
+				
+				
+				
+				
+				String[] resourceId=resourceMapping.resourceId();
+				
+				String encoding=resourceMapping.encoding();
+				for(String id:resourceId)
+				{
+					MethodDataStruct methodDataStruct=new MethodDataStruct();
+					methodDataStruct.setMethod(method);
+					methodDataStruct.getData().put("resourceType",resourceType);
+					methodDataStruct.getData().put("encoding", encoding);
+					this.resourceMapping.put(id, methodDataStruct);
+				
+				}
+			}
 			
 		}
 		// TODO Auto-generated constructor stub
@@ -166,7 +243,84 @@ public class MVCFreeMarkerPortlet extends MVCPortlet {
 	
 	
 	@Override
-	protected void doDispatch(RenderRequest renderRequest, RenderResponse renderResponse)
+	public final void serveResource(ResourceRequest resourceRequest, ResourceResponse resourceResponse)
+			throws IOException, PortletException {
+		String resourceId=resourceRequest.getResourceID();
+		MethodDataStruct invokeMethodStruct=resourceMapping.get(resourceId);
+		if(invokeMethodStruct==null) {
+			HttpServletResponse response=PortalUtil.getHttpServletResponse(resourceResponse);
+			response.setStatus(404);
+			mvcFreeMarkerPortletLogger.debug("未映射资源请自行添加方法，资源ID:{}",resourceId);
+			return;
+			
+			
+		}
+		Method invokeMethod=invokeMethodStruct.getMethod();
+		ResourceType resourceType=invokeMethodStruct.getAttribute("resourceType");
+		String encoding=invokeMethodStruct.getAttribute("encoding");
+		System.out.println(resourceId);
+		
+		
+		
+		
+		switch (resourceType) {
+		case JSON:
+			resourceResponse.setContentType(ResourceType.JSON.getMIMEType()+"charset="+encoding);
+			
+			
+			
+			
+			try {
+				
+				Object resultBean=invokeMethod.invoke(this,resourceRequest,resourceResponse);
+			    if(resultBean instanceof String)
+			    	resourceResponse.getWriter().print(resultBean);
+			    else
+				resourceResponse.getWriter().print(gson.toJson(resultBean));
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+				mvcFreeMarkerPortletLogger.error("错误：",e);
+				throw new RuntimeException("修饰方法参数错误，方法签名必须为([Ljavax.portlet.ResourceRequest;[Ljavax.portlet.ResourceResponse)[Ljava.lang.Object");
+				
+			}
+			
+			break;
+		case FILE:
+
+			try {
+				FileStruct fileStruct=(FileStruct) invokeMethod.invoke(this,resourceRequest,resourceResponse);
+			   if(fileStruct.getFile()==null) {
+				   mvcFreeMarkerPortletLogger.error("错误，未设置文件请检查您的编程,错误方法为：",invokeMethod.getName());
+				   throw new RuntimeException("错误，未设置文件请检查您的编程");
+			   }
+				byte[] bytes=FileUtil.getBytes(fileStruct.getFile());
+				 HttpServletRequest request = PortalUtil.getHttpServletRequest(resourceRequest);
+				 HttpServletResponse response = PortalUtil.getHttpServletResponse(resourceResponse);
+				
+				ServletResponseUtil.sendFile(request, response, fileStruct.getDownloadName(), bytes, fileStruct.getContentType());
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+				mvcFreeMarkerPortletLogger.error("错误：",e);
+				throw new RuntimeException("修饰方法参数错误，方法签名必须为([Ljavax.portlet.ResourceRequest;[Ljavax.portlet.ResourceResponse)[Lcom.jiayang.portlet.struts.FileStruct;");
+				
+			}
+			catch (ClassCastException e) {
+				// TODO: handle exception
+			}
+			
+			break;
+		default:
+			break;
+		}
+		
+		
+		
+		
+		
+		
+	}
+	@Override
+	protected final void doDispatch(RenderRequest renderRequest, RenderResponse renderResponse)
 			throws IOException, PortletException {
 		// TODO Auto-generated method stub
 		String path=getPath(renderRequest);
@@ -178,12 +332,8 @@ public class MVCFreeMarkerPortlet extends MVCPortlet {
 		{
 		   HttpMethod method=HttpMethod.valueOf(PortalUtil.getHttpServletRequest(renderRequest).getMethod());
 		   Method invokeMethod=URLMapping.get(getPath(renderRequest)).get(method);
-		   Class<?>[] parameterTypes=invokeMethod.getParameterTypes();
-		   if(parameterTypes.length==2
-				   &&parameterTypes[0].getName().equals("javax.portlet.RenderRequest")
-				   &&parameterTypes[1].getName().equals("javax.portlet.RenderResponse")
-				   &&IModelAndView.class.isAssignableFrom(invokeMethod.getReturnType()))
-			   {
+		   
+			   
 			   try {
 			      ModelAndView modelAndView=(ModelAndView)invokeMethod.invoke(this,renderRequest,renderResponse); 
 			      viewToResponse(renderRequest, renderResponse, modelAndView,invokeMethod);
@@ -201,11 +351,8 @@ public class MVCFreeMarkerPortlet extends MVCPortlet {
 				   mvcFreeMarkerPortletLogger.error("错误：{}",e);
 				// TODO: handle exception
 			}
-			   }
-		   else
-		   {
-			  throw new RuntimeException("方法签名错误，错误方法为"+invokeMethod.getName());
-		   }
+			   
+		  
 		   
 		   
 		   

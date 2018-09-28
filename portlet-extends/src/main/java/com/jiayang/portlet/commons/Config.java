@@ -21,6 +21,7 @@ public class Config {
 	public static Map<String,Object> config;
 	static {
 		config=new MergeConfig("extend.yaml").getConfig();
+		configLogger.debug("配置完成，详细配置信息为：{}",config);
 	}
 		
           

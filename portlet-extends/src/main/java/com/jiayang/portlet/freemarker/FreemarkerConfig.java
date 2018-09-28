@@ -30,7 +30,7 @@ public class FreemarkerConfig {
 			throw new RuntimeException("设置目录失败，不存在的目录或者目录被占用，请检查extend.yaml文件templat下的path设置是否正确");
 		}
     	
-    	freemarkerConfigLogger.info("{}初始化完成",configuration);
+    	freemarkerConfigLogger.info("=======================freemarker配置初始化完成=========================");
     	
     }
     
