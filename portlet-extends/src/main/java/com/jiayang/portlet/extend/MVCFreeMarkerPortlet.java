@@ -203,9 +203,8 @@ public class MVCFreeMarkerPortlet extends MVCPortlet {
 						if(!(parameterTypes.length==2
 								   &&parameterTypes[0].getName().equals("javax.portlet.ResourceRequest")
 								   &&parameterTypes[1].getName().equals("javax.portlet.ResourceResponse")
-								   &&!FileStruct.class.isAssignableFrom(method.getReturnType())))
+								   &&FileStruct.class.isAssignableFrom(method.getReturnType())))
 							   {
-						
 								  throw new RuntimeException("方法签名错误，错误方法为"+method.getName()+"目前只支持方法签名为([Ljavax.portlet.ResourceRequest;[Ljavax.portlet.ResourceResponse;)[Lcom.jiayang.portlet.struts.FileStruct的方法");
 							   }
 					
