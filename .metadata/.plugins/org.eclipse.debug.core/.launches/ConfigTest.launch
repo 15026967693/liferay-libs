@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.junit.launchconfig">
-<listAttribute key="StepOutExcludePkgsOrClasses"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/portlet-extends/src/test/java/com/jiayang/prolet/test/ConfigTest.java"/>
+<listEntry value="/util-extends/src/test/java/ConfigTest.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
@@ -12,7 +11,7 @@
 <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
 <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.buildship.core.classpathprovider"/>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.jiayang.prolet.test.ConfigTest"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="portlet-extends"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ConfigTest"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="util-extends"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea"/>
 </launchConfiguration>

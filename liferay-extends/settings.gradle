@@ -10,5 +10,7 @@
 rootProject.name = 'liferay-extends'
 include ':portlet-extends'
 include ':util-extends'
+include ':portlet-kotlin'
 project(':portlet-extends').projectDir=new File(settingsDir,'../portlet-extends')
 project(':util-extends').projectDir=new File(settingsDir,'../util-extends')
+project(':portlet-kotlin').projectDir=new File(settingsDir,'../portlet-kotlin')

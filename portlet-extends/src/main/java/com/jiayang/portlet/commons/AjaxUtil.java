@@ -2,6 +2,7 @@ package com.jiayang.portlet.commons;
 
 import javax.portlet.RenderRequest;
 
+import com.jiayang.util.config.Config;
 import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
 import com.liferay.portal.kernel.util.JavaConstants;
 

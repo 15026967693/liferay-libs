@@ -135,7 +135,7 @@ public class MVCFreeMarkerPortlet extends MVCPortlet {
 		} 
 		catch (ViewNullExcetion e) {
 			mvcFreeMarkerPortletLogger.debug("疑似编程错误",e);
-			mvcFreeMarkerPortletLogger.debug("在解析路径{}的时候您在对应的{}方法中返回了一个值为null的视图，如果这不是您的预期行为，请检查代码",getPath(renderRequest),invokeMethod.getName());
+			mvcFreeMarkerPortletLogger.debug("在解析路径{}的时候您在对应的{}方法中返回了一个值为null的视图，当前portlet全类名为：{},如果这不是您的预期行为，请检查代码",getPath(renderRequest),invokeMethod.getName(),this.getClass().getName());
 			doView(renderRequest, renderResponse);
 		}
 		
@@ -329,12 +329,27 @@ public class MVCFreeMarkerPortlet extends MVCPortlet {
 		}
 		else
 		{
+			
+			
+			
+			
 		   HttpMethod method=HttpMethod.valueOf(PortalUtil.getHttpServletRequest(renderRequest).getMethod());
 		   Method invokeMethod=URLMapping.get(getPath(renderRequest)).get(method);
 		   
 			   
 			   try {
 			      ModelAndView modelAndView=(ModelAndView)invokeMethod.invoke(this,renderRequest,renderResponse); 
+			      //合并portlet路径和url生成工具到modelAndView
+			      renderRequest.setAttribute("projectPath", renderRequest.getScheme()+"://"+renderRequest.getServerName()+":"+renderRequest.getServerPort()+"/"+getPortletContext().getPortletContextName());	
+				  renderRequest.setAttribute("pathUtil", new PathUtil(renderRequest));
+                  mergeRenderRequestToModel(renderRequest,modelAndView);
+			      
+			      
+			      
+			      
+			      
+			      
+			      
 			      viewToResponse(renderRequest, renderResponse, modelAndView,invokeMethod);
 			      
 			      

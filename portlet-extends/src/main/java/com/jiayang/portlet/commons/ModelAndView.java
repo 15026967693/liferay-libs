@@ -6,6 +6,7 @@ import java.util.Map;
 import org.slf4j.LoggerFactory;
 
 import com.jiayang.portlet.exception.ViewNullExcetion;
+import com.jiayang.util.config.Config;
 
 import org.slf4j.Logger;
 

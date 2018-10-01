@@ -4,7 +4,7 @@ import java.io.File;
 
 import com.liferay.portal.kernel.util.ContentTypes;
 
-public class FileStruct {
+public class FileStruct implements IFileStruct{
 private File file;
 private String downloadName;
 private String contentType=ContentTypes.APPLICATION_OCTET_STREAM;

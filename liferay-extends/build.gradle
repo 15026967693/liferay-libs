@@ -47,7 +47,7 @@ allprojects{
 	 
 	   // This dependency is used internally, and not exposed to consumers on their own compile classpath.
 	   implementation 'com.google.guava:guava:23.0'
-   
+	   compileOnly "com.liferay.portal:portal-service:5.2.3"
 	   // Use JUnit test framework
 	   testImplementation 'junit:junit:4.12'
 	   
@@ -92,7 +92,7 @@ subprojects{
 	libcp.dependsOn jar
 	
 }
-
+//extends项目依赖
 project(':portlet-extends'){
 	
 	apply plugin:'java'
@@ -111,8 +111,27 @@ project(':portlet-extends'){
 		compileOnly "com.liferay.portal:com.liferay.portal.kernel:${liferay.version}"
 		
 	}
+	//kotlin项目依赖
+	project(':portlet-kotlin'){
 		
+		apply plugin:'java'
 		
+			ext{
+				liferay=[version:'1.0.3']
+				liferay.util=[version:'1.0.0']
+				portletApi=[version:'2.0']
+				servletApi=[version:"3.1.0"]
+			}
+		dependencies{
+			compileOnly "com.liferay.portal:com.liferay.util.bridges:${liferay.util.version}"
+			compileOnly "javax.portlet:portlet-api:${portletApi.version}"
+			// https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api
+			compileOnly "javax.servlet:javax.servlet-api:${servletApi.version}"
+			compileOnly "com.liferay.portal:com.liferay.portal.kernel:${liferay.version}"
+			
+		}
+		
+}
 }
 
 

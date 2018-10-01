@@ -9,6 +9,7 @@ import javax.portlet.RenderRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.jiayang.util.config.Config;
 import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
 import java.net.URLEncoder;
 import com.liferay.portal.kernel.util.JavaConstants;

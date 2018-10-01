@@ -78,7 +78,7 @@ JavaConstants.JAVAX_PORTLET_CONFIG)).getPortletId()方法获取到，其中reque
 ```
 重新封装了serveResource方法
 现在支持直接注解方法返回服务器资源，示例如下：
-``` groovy
+``` java
 @ResourceMapping(resourceId="test")
 	public String json(ResourceRequest renderRequest,ResourceResponse renderResponse)
 	{
@@ -97,5 +97,20 @@ JavaConstants.JAVAX_PORTLET_CONFIG)).getPortletId()方法获取到，其中reque
 
 
 ```
-注意json可以返回任何非基本类型，底层使用goole 的gson转换成字符串，对于字符串类型虽然也是一个非基本类型，但做了特殊处理，对于String类型不会做json转换！！1
+注意json可以返回任何非基本类型，底层使用goole 的gson转换成字符串，对于字符串类型虽然也是一个非基本类型，但做了特殊处理，对于String类型不会做json转换！！
 
+
+
+# 增加lua支持默认全局路径为WEB-INF/lua/global,局部路径为WEB-INF/lua/runtime,新配置文件如下
+``` yaml
+template:
+        path: /template
+        suffix: .ftl
+friendlyURL: web/guest/home
+luaScript: 
+        globalPaths:
+                  -  WEB-INF相对路径1
+        runtimePaths:
+                  -  WEB-INF相对路径2
+
+``` 

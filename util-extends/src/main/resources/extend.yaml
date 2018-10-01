@@ -1,0 +1,11 @@
+template:
+        path: /
+        encoding: UTF-8
+        suffix: .ftl
+friendlyURL: web/guest/home
+#Lua脚本路径为了安全一律放在WEB-INF下且不可更改
+luaScript: 
+        globalPaths:
+                  -  lua/global
+        runtimePaths:
+                  -  lua/runtime
